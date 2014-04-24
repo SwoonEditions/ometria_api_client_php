@@ -2,7 +2,7 @@
 
 namespace OmetriaAPI;
 
-require(__DIR__.'/ClientException.php');
+require(__DIR__.'/APIException.php');
 
 class Client {
 
@@ -54,10 +54,12 @@ class Client {
 
 		$result = json_decode($json);
 
+		print_r($result);
+
 		if (@$result->status=='OK') {
 			return @$result->data;
 		} else {
-			throw new ClientException('Server returned error');
+			throw new APIException(@$result->message);
 		}
 	}
 }

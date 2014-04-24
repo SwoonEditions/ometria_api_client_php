@@ -12,7 +12,7 @@ $datetime_to = '2014-03-11 23:59:59';
 $query_string = array(
 	'limit' => 100,
 	'offset'=>0,
-	'timeFrom' => $datetime_from,
+	'timeFrom' => $datetime_from,	// @todo document in API docs
 	'timeTo' => $datetime_to
 	);
 
