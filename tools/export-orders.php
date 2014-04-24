@@ -13,9 +13,8 @@ $client = new \OmetriaAPI\Client($config);
 
 $query_params = array('limit','offset','timeFrom','timeTo');
 $query_string = array();
-$query_max    = 250;
 $offset       = 0;
-// $limit        = 1000;
+$page_size    = 250;
 $page_count   = 0;
 $data         = array();
 $res;
@@ -38,7 +37,8 @@ for($i=1; $i<count($argv);$i++){
 	}
 }
 
-$offset = $parsed_args['offset'] ?: 0;
+//$offset = @$parsed_args['offset'] ?: 0;
+$offset = isset($parsed_args['offset']) ? $parsed_args['offset'] : 0;
 // $limit  = $parsed_args['limit'] ?: 100000000;
 
 // algorithm will be:
@@ -48,28 +48,50 @@ $offset = $parsed_args['offset'] ?: 0;
 // Require the Ometria Client library.
 
 function get_data($offset, $limit) {
-	global $res, $client, $query_max, $data, $page_count, $query_string;
+	global $res, $client, $data, $page_count, $query_string;
 
-	$query_string['offset'] = $offset + ( $page_count * $query_max );
+	$query_string['limit'] = $limit;
+	$query_string['offset'] = $page_count  * $limit;
 	print_r($query_string);
 	$res = $client->get('transactions', $query_string);
 
 	if (is_array($res)) {
 		$data = array_merge($data, $res);
-		echo(count($res));
-		print_r($data);
+		echo(count($res)),"\n";
+		echo(count($data)),"\n";
+		//print_r($data);
 	}
 
 	$page_count++;
+	echo 'page ',$page_count,"\n";
 
-	if (count($data) < $limit || count($res) === $query_max) {
+	if (count($res) == $limit) {
 		sleep(1);
 		get_data($offset, $limit);
 	}
 }
 
-get_data($offset, $limit);
+get_data($offset, $page_size);
 
 echo "\n And the total is....... \n";
 echo count($data);
 echo "\n";
+
+
+$page_size  = 250;
+$offset = 0;
+
+while(true){
+	$qs = array();
+	$qs['limit'] = $page_size;
+	$qs['offset'] = $offset;
+	$res = $client->get('transactions', $query_string);
+
+	// append
+
+	if (count($res)<$page_size) {
+		break;
+	}
+
+	$offset += $page_size;
+}
