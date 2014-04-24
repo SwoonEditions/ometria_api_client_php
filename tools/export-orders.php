@@ -19,4 +19,9 @@ for($i=1; $i<count($argv);$i++){
 	}
 }
 
+// algorithm will be:
+// 1) Get first <limit> results
+// 2) If number of results < <limit> break
+// 3) Repeat
+
 print_r($parsed_args);
