@@ -97,7 +97,7 @@ class Client {
 		$result = json_decode($json);
 
 		// Print the result JSON in human-readable form
-		print_r($result);
+		// print_r($result);
 
 		// Check response status for errors
 		if (@$result->status=='OK') {
