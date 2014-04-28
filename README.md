@@ -58,34 +58,27 @@ $res = $client->get('transactions', $query);
 
 ####post(resource, $data)
 
-Use `post()` to create new records using the Ometria API.
+Use `post()` to set records using the Ometria API.
 
 The `post()` method accepts the following arguments:
 
-- **$resource** - The required resource for the request, as a string.
+- **$resource:id** - The required resource for the request, as a string. 
 - **$data** - An array with new data records to post.
 
 For example, to create a new record:
 
  ```php
-data = array(NEW DATA RECORDS TO POST);
-$res = $client->post('transactions', $data);
- ```
- 
-####put(resource, $data)
- 
-Use `put()` to update existing records using the Ometria API.
-
-The `put()` method accepts the following arguments:
-
-- **$resource** - The required resource for the request, as a string.
-- **$data** - An array with new data records to post.
-
-For example, to update an existing record:
-
- ```php
-data = array(NEW DATA RECORDS TO POST);
-$res = $client->put('transactions', $data);
+data = array(
+	     'timestamp'   => '2013-10-29T11:58:59+00:00',
+	     'subtotal'    => 12.34,
+	     'shipping'    => 1.00,
+	     'tax'         => 0.5,
+	     'grand_total' => 15,
+	     'currency'    => 'GBP',
+	     'line_itmes'  => array(LINE_ITEMS)
+		);
+	      
+$res = $client->post('/transactions/{transaction_id}', $data);
  ```
  
 ### Further Documentation
@@ -109,6 +102,8 @@ The Exporter accepts the following parameters:
 - **timeFrom** (required) - 'YYYY/MM/DD'
 - **timeTo** (required) - 'YYYY/MM/DD'
 - **format** - 'json','objects' or 'csv' (JSON is default)
+
+##### Note that CSV mode does not retrieve line items for orders.
 
 Parameters can be listed sequentially in the following format:
 
