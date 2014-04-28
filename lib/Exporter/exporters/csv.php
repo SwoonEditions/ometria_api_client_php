@@ -31,6 +31,7 @@ class csv extends \Exporter\Exporter {
 
 			// Loop over each $headers and populate the $row array for compatible keys
 			foreach ($this->headers as $header) {
+
 				// Conditionally assign the value of $value if the key exists in $record
 				$value = property_exists($record, $header) ? $record->{$header} : ' ';
 
