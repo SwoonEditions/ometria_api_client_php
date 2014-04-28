@@ -1,11 +1,19 @@
 <?php
 /**
- * Usage: php export-orders.php --timeFrom=date --timeTo=date --limit=100 --output='myfile' --format='json'
+ * Usage: php export-orders.php --timeFrom=date --timeTo=date --output='myfile' --format='json'
  */
-echo "Ometria API Client \nPress Ctrl+C to abort.\n\n";
+echo "\033[1;31m Ometria API Client \033[0m \nPress Ctrl+C to abort.\n\n";
 
-// Load the Ometria API Client class.
+echo "Accecpted parameters:\n- output (required): Output File Name \n- format - 'json','objects' or 'csv' (JSON is default)\n- timeFrom (required) - 'YYYY/MM/DD'\n- timeTo (required) - 'YYYY/MM/DD'\n\n";
+
+echo "(e.g. --output='ometriaOrdersExport')\n\n";
+
+// Load the Ometria API Client and Exporter classes.
 require('../lib/OmetriaAPI/Client.php');
+require('../lib/Exporter/Exporter.php');
+require('../lib/Exporter/exporters/json.php');
+require('../lib/Exporter/exporters/objects.php');
+require('../lib/Exporter/exporters/csv.php');
 
 // Load the configuration file (this file must be created following config-example.php).
 $config = require('../config.php');
@@ -15,15 +23,13 @@ $client = new \OmetriaAPI\Client($config);
 
 $query_params = array('limit','offset','timeFrom','timeTo');
 $query_string = array();
+$req_params   = array('output'=>0,'timeFrom'=>0, 'timeTo'=>0);
 $offset       = 0;
 $page_size    = 250;
 $page_count   = 0;
 $data         = array();
 $parsed_args  = array();
 $resource     = 'transactions';
-$res;
-$export;
-$file;
 
 // Parse CLI arguements
 for($i=1; $i<count($argv);$i++){
@@ -45,10 +51,19 @@ for($i=1; $i<count($argv);$i++){
 	}
 }
 
+// Check if all required arguements are provided
+$param_diff = array_diff_key($req_params, $parsed_args);
+
+// Aborts if any required parameters are not provided
+if (count($param_diff) > 0) {
+	echo "\033[41m Missing Parameters: ", implode(', ', array_keys($param_diff)), ". \033[0m \n";
+	die();
+}
+
 echo "Querying for ", $resource, "...\n\n";
 
-// If an offset is specified, add it to the query string, otherwise start from record 0.
-$offset = isset($parsed_args['offset']) ? $parsed_args['offset'] : 0;
+// If a format is specified use it, otherwise default to JSON.
+$format = isset($parsed_args['format']) ? strtolower($parsed_args['format']) : 'json';
 
 // Set the limit of the query to the maximum page size (specified to assure operation of the client).
 $query_string['limit'] = $page_size;
@@ -74,7 +89,6 @@ while(true){
 
 	// Check if the response array's length matches the page size.
 	if (count($res)<$page_size) {
-
 		// Break out of the while loop if the responce is smaller than the page size (means that the end of the data set was reached).
 		break;
 	}
@@ -82,29 +96,18 @@ while(true){
 
 echo "\n\n Completed data fetch. \n Retrieved a total of ", count($data), " ", $resource," records.\n";
 
-// Convert the result data set to JSON.
-$export = json_encode($data, JSON_PRETTY_PRINT) or die("Could not create export file.");
+// Instantiate the Exporter class.
+$exporter = "\Exporter\\".$format;
+$export = new $exporter();
 
 // Create a file to export the data.
-$file = "Ometria_API_".$resource."_export";
-$extension = ".json";
-$i = 1;
-$file_name = $file;
-// Check if file exists and append a serializer
-while(file_exists($file_name.$extension))
-{
-    $file_name = $file."_".$i;
-    $i++;
-}
-
-// Set file name to serialized name.
-$file = $file_name.$extension;
+$file = $parsed_args['output'];
 
 // Create and pen file with writing permission.
 $handle = fopen($file, "wb");
 
-// Write JSON string to $file.
-fwrite($handle, $export);
+// write export data to file.
+$export->export($handle, $data, $format);
 
 // Close the file after writing.
 fclose($handle);
