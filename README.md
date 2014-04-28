@@ -99,8 +99,8 @@ You can always follow on-screen instructions to use it.
 
 The Exporter accepts the following parameters:
 - **output** (required): Output File Name
-- **timeFrom** (required) - 'YYYY/MM/DD'
-- **timeTo** (required) - 'YYYY/MM/DD'
+- **timeFrom** (required) - 'YYYY-MM-DD'
+- **timeTo** (required) - 'YYYY-MM-DD'
 - **format** - 'json','objects' or 'csv' (JSON is default)
 
 ##### Note that CSV mode does not retrieve line items for orders.
