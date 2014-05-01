@@ -19,6 +19,9 @@ return array(
 
   ```
 
+Follow [this doc](http://docs.ometria.localhost/Developers/API/v1/authentication/api_key) to obtain an API key and API secret.
+
+
 ### Initializing the API Client
 
 Load client.php in your code:
