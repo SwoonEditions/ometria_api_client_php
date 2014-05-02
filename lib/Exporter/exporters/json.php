@@ -7,7 +7,7 @@ namespace Exporter;
 *  Exporter subclass to handle JSON formatted file export
 */
 class json extends \Exporter\Exporter {
-	protected function format_data($handle, $data){
+	public function export($handle, $data){
 		echo 'JSON is Exporoted!';
 
 		// Write JSON string to $file.

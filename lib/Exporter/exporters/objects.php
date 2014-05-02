@@ -7,7 +7,7 @@ namespace Exporter;
 *  Exporter subclass to handle JSON Objects formatted file export
 */
 class objects extends \Exporter\Exporter {
-	protected function format_data($handle, $data){
+	public function export($handle, $data){
 		echo 'JSON Objects is Exporoted!';
 
 		// Iterate over array to Stringify individual objects.

@@ -11,10 +11,7 @@ class csv extends \Exporter\Exporter {
 	var $entry;
 
 	// CSV implementation of format_data
-	protected function format_data($handle, $data){
-		// Make $headers accesible to the protected function
-		global $headers;
-
+	public function export($handle, $data){
 		// Get number of records in data set
 		$total = count($data);
 		$count = 0;
