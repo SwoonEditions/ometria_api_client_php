@@ -76,10 +76,20 @@ class Client {
 		// Set the URL for the request to the endpoint
 		curl_setopt($ch, CURLOPT_URL, $url);
 
+
+		$method = strtoupper($method);
+		if ($method!='GET') curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+		$body_content = '';
+
+		if ($method == 'PUT' || $method=='POST') {
+			$body_content = json_encode($payload_data);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $body_content);
+		}
+
 		// create the request signature by calculating
 		// an HMAC-SHA256 hash and encoding it in Base64
 		// note the input is the url built earlier
-		$sig = base64_encode(hash_hmac('sha256', $url, $this->config['api-secret']));
+		$sig = base64_encode(hash_hmac('sha256', $url.$body_content, $this->config['api-secret']));
 
 		// Specify request headers
 		$headers = array(
@@ -102,8 +112,8 @@ class Client {
 		// Check response status for errors
 		if (@$result->status=='OK') {
 
-			// Return the response data
-			return @$result->data;
+			// Return the response data if GET or whole reponse otherwise
+			return $method=='GET' ? @$result->data : $result;
 
 		} else {
 

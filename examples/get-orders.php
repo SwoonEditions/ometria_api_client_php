@@ -19,8 +19,8 @@ $config = require('../config.php');
 $client = new \OmetriaAPI\Client($config);
 
 // A data range is defined for the transaction query in two variables, $datetime_from and $datetime_to.
-$datetime_from = '2014-03-11 00:00:00';
-$datetime_to = '2014-03-11 23:59:59';
+$datetime_from = '2014-04-11 00:00:00';
+$datetime_to = '2014-04-11 23:59:59';
 
 // The query Array is constructed, specifying a record limit, offset and date range.
 $query_string = array(
