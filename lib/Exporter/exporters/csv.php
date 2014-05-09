@@ -7,7 +7,9 @@ namespace Exporter;
 *  Exporter subclass to handle CSV formatted file export
 */
 class csv extends \Exporter\Exporter {
-	var $headers = array("@type", "channel", "country_id", "coupon_code", "currency", "customer_email", "customer_firstname", "customer_lastname", "customer_name", "discount", "grand_total", "id", "ip_address", "is_valid", "payment_method", "shipping", "shipping_type", "subtotal", "tax", "timestamp", "total_refunded");
+	var $headers = array("@type", "channel", "country_id", "coupon_code", "currency", "customer_email",
+		"customer_firstname", "customer_lastname", "customer_name", "discount", "grand_total", "id", "ip_address",
+		"is_valid", "payment_method", "shipping", "shipping_type", "subtotal", "tax", "timestamp", "total_refunded");
 	var $entry;
 
 	// CSV implementation of format_data
@@ -30,7 +32,7 @@ class csv extends \Exporter\Exporter {
 			foreach ($this->headers as $header) {
 
 				// Conditionally assign the value of $value if the key exists in $record
-				$value = property_exists($record, $header) ? $record->{$header} : ' ';
+				$value = property_exists($record, $header) ? $record->{$header} : '';
 
 				// Append the value to the row array
 				array_push($row, $value);

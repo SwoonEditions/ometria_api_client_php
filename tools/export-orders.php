@@ -2,11 +2,7 @@
 /**
  * Usage: php export-orders.php --timeFrom=date --timeTo=date --output='myfile' --format='json'
  */
-echo "\033[1;31m Ometria API Client \033[0m \nPress Ctrl+C to abort.\n\n";
-
-echo "Accecpted parameters:\n- output (required): Output File Name \n- format - 'json','objects' or 'csv' (JSON is default)\n- timeFrom (required) - 'YYYY/MM/DD'\n- timeTo (required) - 'YYYY/MM/DD'\n\n";
-
-echo "(e.g. --output='ometriaOrdersExport')\n\n";
+echo "\033[1;31mOmetria API Client \033[0m \nPress Ctrl+C to abort.\n\n";
 
 // Load the Ometria API Client and Exporter classes.
 require('../lib/OmetriaAPI/Client.php');
@@ -27,7 +23,7 @@ $req_params   = array('output'=>0,'timeFrom'=>0, 'timeTo'=>0);
 $offset       = 0;
 $page_size    = 250;
 $page_count   = 0;
-$data         = array();
+$retrieved_rows = array();
 $parsed_args  = array();
 $resource     = 'transactions';
 
@@ -57,6 +53,14 @@ $param_diff = array_diff_key($req_params, $parsed_args);
 // Aborts if any required parameters are not provided
 if (count($param_diff) > 0) {
 	echo "\033[41m Missing Parameters: ", implode(', ', array_keys($param_diff)), ". \033[0m \n";
+
+	echo "Accepted parameters:
+	- output (required): Output File Name
+	- format - 'json','objects' or 'csv' (JSON is default)
+	- timeFrom (required) - 'YYYY/MM/DD'
+	- timeTo (required) - 'YYYY/MM/DD'\n\n";
+	echo "(e.g. --output='ometriaOrdersExport')\n\n";
+
 	die();
 }
 
@@ -78,10 +82,11 @@ while(true){
 
 	// Check if the API response returned a valid array.
 	if (is_array($res)) {
-		echo "\r* Retrieved ", $resource, " records ", ($offset - count($data)), " to ", ($offset + count($res)), "...";
+		//echo 'Got '.count($res)."\n";
+		echo "\r* Retrieved ", $resource, " records ", $offset, " to ", ($offset + count($res)), "...";
 
 		// Merge the responce into the previously retrieved data set.
-		$data = array_merge($data, $res);
+		foreach($res as $row) $retrieved_rows[] = $row;
 	}
 
 	// Increment the offset by the page size retrieved.
@@ -94,7 +99,7 @@ while(true){
 	}
 }
 
-echo "\n\n Completed data fetch. \n Retrieved a total of ", count($data), " ", $resource," records.\n";
+echo "\n\n Completed data fetch. \n Retrieved a total of ", count($retrieved_rows), " ", $resource," records.\n";
 
 // Instantiate the Exporter class.
 $exporter = "\Exporter\\".$format;
@@ -107,7 +112,7 @@ $file = $parsed_args['output'];
 $handle = fopen($file, "wb");
 
 // write export data to file.
-$export->export($handle, $data, $format);
+$export->export($handle, $retrieved_rows, $format);
 
 // Close the file after writing.
 fclose($handle);
